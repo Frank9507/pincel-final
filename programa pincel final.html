@@ -1,14 +1,10 @@
 <canvas width="600" height="400"></canvas>
-
 <script>
     var pantalla = document.querySelector('canvas');
     var pincel = pantalla.getContext('2d');
-
     pincel.fillStyle = 'grey';
     pincel.fillRect(0, 0, 600, 400);
-
-    var puedoDibujar = false;
-
+    var puedoDibujar = false; //variable para poder hacer la funcion de DIBUJAR CIRCULO que esta mas abajo (la primera)
     //Variables para dibujar la paleta
     var xRojo = 0;
     var xVerde  = 50;
@@ -16,117 +12,80 @@
     var yCuadrados = 0;
     var tamanhoCuadrados = 50;
     var colorActual = "blue";
-
-    function dibujarCirculo(x,y,colorActual ) {
-
-        if(puedoDibujar) {
-
-            pincel.fillStyle = colorActual;
+    
+    function dibujarCirculo(x,y,colorActual ) {//los parametros se van a introduccion despues cuando se llame a la funcion    <<<<ESTA ES LA FUNCION 1 PARA DIBUJAR>>>
+        //En esta condicionante "puedo dibujar" esta con FALSE, por eso no se ejecutara hasta que haya una variable booleana true
+        if(puedoDibujar) { //lo que ejecuta abajo esta funcion ya esta configurada, solo cambuara el color
+            pincel.fillStyle = colorActual;   
             pincel.beginPath();
             pincel.arc(x, y, 5, 0, 2 * 3.14);
             pincel.fill();
-
-        }
+        }   
     }
-
+    
     //Función para dibujar cada uno de los cuadrados de la paleta
-    function dibujarCuadrado(x, y, tamanho, color) {
-
+    function dibujarCuadrado(x, y, tamanho, color) { //estos son los parametros que se van a utilizar, deberan ir en ese mismo orden, y estara en la fx siguiente
         pincel.fillStyle = color;
         pincel.fillRect(x, y, tamanho, tamanho)
         pincel.fill();
-
     }
-
+    
     //Función para dibujar la paleta de colores
-    function dibujarPaletaColores() {
-
-        dibujarCuadrado(xRojo, yCuadrados, tamanhoCuadrados, 'red');
+    function dibujarPaletaColores() { //llamamos a la funcion anterior para minimizar o simplificar los codigos, solo anexamos las variables de un inicio 
+        dibujarCuadrado(xRojo, yCuadrados, tamanhoCuadrados, 'red'); //llamamos a las variables de un inicio y configuramos los colores que deseamos
         dibujarCuadrado(xVerde, yCuadrados, tamanhoCuadrados, 'green');
         dibujarCuadrado(xAzul, yCuadrados, tamanhoCuadrados, 'blue');
-
     }
-
-    function habilitarDibujar() {
-
+    
+    function habilitarDibujar() { //se crea esta funcion para habilitar la primera funcion 1, ya que contiene una variable booleana
         puedoDibujar = true;
-
     }
-
+    
     function deshabilitarDibujar() {
-
-        puedoDibujar = false;
-
+        puedoDibujar = false;  // se crea esta funcion para deshabilitar la primera funcion 1, ya que contiene una variable booleana (ya contiene false, pero de debe poner porque de lo contrario al momento de levantar el clic, seguira siendo true, se vera mas abajo cuando se deshabilite la funcion cuando se llame)
     }
-
+    
     //Función para delimitar el área
-    function puedeDisenharArea(xCoordenada,yCoordenada){
-
-        if ((xCoordenada >= 0 && xCoordenada < (3*tamanhoCuadrados+5)) && 
+    function puedeDisenharArea(xCoordenada,yCoordenada){ 
+    //se crea esta funcion para ser utilizada en la siguiente funcion, nos servira solo para delimitar el area donde no se podra dibujar. Debe ser mayor a 0 y menor que el tamaño de los 3 cuadrados de la paleta de colores, se agrega el 5 para considerar el tamaño del radio del circulo y no abarque un pedazo de cuadro de la paleta
+        if ((xCoordenada >= 0 && xCoordenada < (3*tamanhoCuadrados+5)) && //serian del 0 al 150 (3*50 de cada cuadrado) + radio 
             (yCoordenada >=0 && yCoordenada < (tamanhoCuadrados+5))) {
-
-            return false;
-
+            return false; 
         } else{
-
             return true;
-
+        //esta funcion nos retorna FALSE O TRUE que nos ayudara con la siguiente funcion, para seguir con la variable booleana del principio y sabes si ejecutar o no la funcion
         }
-
     }    
-
-    function capturarMovimientoDelMouse(evento){
-
+    function capturarMovimientoDelMouse(evento){  //el evento será el clic abajo o clic arriba, que ejecutara la accion de la siguiente funcion
         var x = evento.pageX - pantalla.offsetLeft;
         var y = evento.pageY - pantalla.offsetTop;
+        
+        //creamos primero las variable de las cordenadas cuando se da clic y se resta el borde del canvas para que las coordenada sean precisas
 
-        if (puedeDisenharArea(x,y)){
-
-                dibujarCirculo(x,y,colorActual);
-
+        if (puedeDisenharArea(x,y)){ //en esta condicionante ingresaran los variables de X y Y que seran llamados al final, aqui la funcion puedeDisenharArea hara  la verificacion con la funcion anterior, si cumple con los 
+                dibujarCirculo(x,y,colorActual); //es la primera funcion, hasta aqui aun no hemos asignado la funcion para poder seleccionar el color de la paleta de colores 
         }
-
     }
-
     function seleccionarColor(evento) {
-
         var x = evento.pageX - pantalla.offsetLeft;
         var y = evento.pageY - pantalla.offsetTop;
-
         //Cada condición altera el color de la variable colorActual
-
         //Comenzamos por la condición del eje Y que es común para todas
         if (y > yCuadrados && y < (yCuadrados + tamanhoCuadrados)) {
-
             if(x > xRojo && x < (xRojo + tamanhoCuadrados)) {
-
                 colorActual = "red";
                 console.log(colorActual);
-
             } else if (x > xVerde && x < (xVerde + tamanhoCuadrados)) {
-
                 colorActual = "green";
-
             } else if(x > xAzul && x < (xAzul + tamanhoCuadrados)) {
-
                 colorActual = "blue";
-
             }            
-
-
         }
-
-
     }
-
     pantalla.onmousemove = capturarMovimientoDelMouse;
-
     pantalla.onmousedown = habilitarDibujar;
-
     pantalla.onmouseup = deshabilitarDibujar;
-
     dibujarPaletaColores();
-
     pantalla.onclick = seleccionarColor;
 
 </script>
